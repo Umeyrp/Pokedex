@@ -1,14 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pokedex</title>
     <link rel="stylesheet" href="./style.css">
+    <link rel="icon" type="image/x-icon" href="./assets/icon/pokeball_icon.png">
 </head>
+
 <body onload="init()">
-    
+    <header></header>
+    <main data-id="content">
+        <input type="search" id="search_pokemon_input" placeholder="Suche Pokemon" name="search_pokemon"
+            oninput="searchPokemon()">
+        <div id="content"></div>
+        <button onclick="fetchMorePokemons()" disabled id="load_more">load more</button>
+        <p id="loading" hidden>Daten Laden...</p>
+    </main>
+    <footer></footer>
 </body>
 <script src="./script.js"></script>
 <script src="./template.js"></script>
+
 </html>
