@@ -16,15 +16,7 @@ async function fetchPokemons() {
     const promises = [];
     try {
         for (let id = pokeIDCounter_start; id <= pokeIDCounter_end; id++) {
-            promises.push(
-                fetch(`https://pokeapi.co/api/v2/pokemon/${id}`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`HTTP-Error: ${response.status}`);
-                        }
-                        return response.json();
-                    })
-            );
+            promises.push(fetchPokemonById(id));
         }
         const fetchedPokemon = await Promise.all(promises);
         allPokemon.push(...fetchedPokemon);
@@ -209,6 +201,15 @@ async function getEvoTemplate(evo) {
 
 async function fetchPokemonByName(name) {
     const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
+    if (!response.ok) {
+        throw new Error(`HTTP-Error: ${response.status}`);
+    }
+    const pokemon = await response.json();
+    return pokemon;
+}
+
+async function fetchPokemonById(id) {
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
     if (!response.ok) {
         throw new Error(`HTTP-Error: ${response.status}`);
     }
