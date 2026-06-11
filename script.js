@@ -78,11 +78,7 @@ function searchPokemon() {
 }
 
 function showNoFoundMessage() {
-    contentRef.innerHTML = `<div class="empty-state">
-                                <img src="./assets/icon/pokeball_icon.png" height="80">
-                                <h2>Kein Pokémon gefunden</h2>
-                                <p>Versuch einen anderen Namen oder Tippfehler zu vermeiden.</p>
-                            </div>`;
+    contentRef.innerHTML = getNoFoundTemplate();
 }
 
 function renderPokemon(pokemonArray) {
@@ -101,18 +97,7 @@ function getPokemonTemplate(pokemonArray) {
                 typesText += " / ";
             }
         }
-        html += `<article onclick="openPokemonDialog(${pokemon.id})"
-                        class="pokemon_card"
-                        style="background-color: ${colours[pokemon.types[0].type.name]};">
-
-                    <div class="name">#${pokemon.id} ${pokemon.name}</div>
-
-                    <img src="${pokemon.sprites.other["official-artwork"].front_default}" height="80">
-
-                    <div class="type">
-                        ${typesText}
-                    </div>
-                </article>`;
+        html += getPokemonCardsTemplate(pokemon, typesText);
     });
     return html;
 }
@@ -142,7 +127,14 @@ function showModal() {
 async function openPokemonDialog(pokeId) {
     const pokemon = getPokemonById(pokeId);
     const evo = await fetchEvoChain(pokemon);
-    const stats = getPokeStats(pokemon);
+    const stats = getPokemonStats(pokemon);
+    const statsHtml = getPokemonStatsTemplate(stats);
+    const typesText = getPokemonTypes(pokemon);
+    dialogRef.innerHTML = await getDialogTemplate(pokemon, typesText, statsHtml, evo);
+    showModal();
+}
+
+function getPokemonTypes(pokemon) {
     let typesText = "";
     for (let i = 0; i < pokemon.types.length; i++) {
         typesText += pokemon.types[i].type.name;
@@ -150,33 +142,10 @@ async function openPokemonDialog(pokeId) {
             typesText += " / ";
         }
     }
-    let statsHtml = "";
-    for (let i = 0; i < stats.length; i++) {
-        statsHtml += `<div>${stats[i]}</div>`;
-    }
-    let html = `<div class="detail-header"
-                    style="background:${colours[pokemon.types[0].type.name]}">
-                    <h2>#${pokemon.id} ${pokemon.name.toUpperCase()}</h2>
-                    <img src="${pokemon.sprites.other["official-artwork"].front_default}" width="160">
-                </div>
-                <div class="dialog-content">
-                    <div class="section-title">Types</div>
-                    <p>${typesText}</p>
-                    <div class="section-title">Stats</div>
-                    <div class="stats">
-                        ${statsHtml}
-                    </div>
-                    <div class="section-title">Evolution</div>
-                    <div class="evo-flow">
-                        ${await getEvoTemplate(evo)}
-                    </div>
-                </div>
-                <button data-id="prev-button" onclick="openPreviousDialog(${pokemon.id})">Vorheriger</button> <button data-id="next-button" onclick="openNextDialog(${pokemon.id})">Nächster</button>`;
-    dialogRef.innerHTML = html;
-    showModal();
+    return typesText;
 }
 
-async function getEvoTemplate(evo) {
+async function renderEvoTemplate(evo) {
     let chain = evo.chain;
     let names = [];
     while (chain) {
@@ -191,12 +160,7 @@ async function getEvoTemplate(evo) {
     let html = "";
     for (let i = 0; i < pokemons.length; i++) {
         const pokemon = pokemons[i];
-        html += `
-        <div class="evo-item">
-            <img src="${pokemon.sprites.other["official-artwork"].front_default}" height="80">
-            <div>${names[i]}</div>
-        </div>
-        `;
+        html += getEvoTemplate(pokemon, names, i);
     }
     return html;
 }
@@ -219,12 +183,20 @@ async function fetchPokemonById(id) {
     return pokemon;
 }
 
-function getPokeStats(pokemon) {
+function getPokemonStats(pokemon) {
     const pokeStats = [];
     pokemon.stats.forEach(stats => {
         pokeStats.push([stats.stat.name, stats.base_stat]);
     });
     return pokeStats;
+}
+
+function getPokemonStatsTemplate(stats) {
+    let statsHtml = "";
+    for (let i = 0; i < stats.length; i++) {
+        statsHtml += `<div>${stats[i]}</div>`;
+    }
+    return statsHtml;
 }
 
 async function fetchPokeSpecies(url) {
@@ -253,7 +225,7 @@ function getPokemonById(pokeId) {
 
 function openPreviousDialog(pokeId) {
     let newId = pokeId - 1;
-    if(newId < 1){
+    if (newId < 1) {
         newId = pokeIDCounter_end;
     }
     openPokemonDialog(newId);
@@ -261,7 +233,7 @@ function openPreviousDialog(pokeId) {
 
 function openNextDialog(pokeId) {
     let newId = pokeId + 1;
-    if(newId > pokeIDCounter_end){
+    if (newId > pokeIDCounter_end) {
         newId = 1;
     }
     openPokemonDialog(newId);
