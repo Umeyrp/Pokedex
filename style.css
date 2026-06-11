@@ -1,4 +1,10 @@
 .pokemon_card:hover {
-    transform: scale(1.1);
     box-shadow: 1px 1px 1px #e7e7e7;
+    transform: scale(1.1);
+}
+
+.content{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
 }

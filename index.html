@@ -12,11 +12,15 @@
 <body onload="init()">
     <header></header>
     <main data-id="content">
-        <input type="search" id="search_pokemon_input" placeholder="Suche Pokemon" name="search_pokemon"
-            oninput="searchPokemon()">
-        <div id="content"></div>
-        <button onclick="fetchMorePokemons()" disabled id="load_more">load more</button>
-        <p id="loading" hidden>Daten Laden...</p>
+        <input type="search" id="search_pokemon_input" placeholder="Suche Pokémon..." oninput="searchPokemon()">
+        <div id="content" class="content"></div>
+        <div class="button_wrapper">
+            <button onclick="fetchMorePokemons()" hidden disabled id="load_more">load more</button>
+        </div>
+        <div id="loading" hidden>
+            <img src="./assets/icon/pokeball_icon.png" class="loader">
+            <p>Laden...</p>
+        </div>
     </main>
     <footer></footer>
 </body>
