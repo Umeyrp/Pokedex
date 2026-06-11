@@ -150,7 +150,12 @@ async function showPokeDetails(pokeId) {
 function getEvoTemplate(evo) {
     let chain = evo.chain;
     let html = "";
-    html += `<p>:${chain.evolves_to[0].species.name}</p>`;
+
+    while (chain) {
+        html += `<p>${chain.species.name}</p>`;
+        chain = chain.evolves_to[0];
+    }
+
     return html;
 }
 
