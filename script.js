@@ -89,6 +89,7 @@ function renderPokemon(pokemonArray) {
     contentRef.innerHTML = getPokemonTemplate(pokemonArray);
     finishLoading();
 }
+
 function getPokemonTemplate(pokemonArray) {
     let html = "";
     pokemonArray.forEach(pokemon => {
@@ -100,7 +101,7 @@ function getPokemonTemplate(pokemonArray) {
                 typesText += " / ";
             }
         }
-        html += `<article onclick="showPokeDetails(${pokemon.id})"
+        html += `<article onclick="openPokemonDialog(${pokemon.id})"
                         class="pokemon_card"
                         style="background-color: ${colours[pokemon.types[0].type.name]};">
 
@@ -138,7 +139,7 @@ function showModal() {
     dialogRef.showModal();
 }
 
-async function showPokeDetails(pokeId) {
+async function openPokemonDialog(pokeId) {
     const pokemon = getPokemonById(pokeId);
     const evo = await fetchEvoChain(pokemon);
     const stats = getPokeStats(pokemon);
@@ -169,7 +170,8 @@ async function showPokeDetails(pokeId) {
                     <div class="evo-flow">
                         ${await getEvoTemplate(evo)}
                     </div>
-                </div>`;
+                </div>
+                <button data-id="prev-button" onclick="openPreviousDialog(${pokemon.id})">Vorheriger</button> <button data-id="next-button" onclick="openNextDialog(${pokemon.id})">Nächster</button>`;
     dialogRef.innerHTML = html;
     showModal();
 }
@@ -220,7 +222,7 @@ async function fetchPokemonById(id) {
 function getPokeStats(pokemon) {
     const pokeStats = [];
     pokemon.stats.forEach(stats => {
-        pokeStats.push(stats.stat.name);
+        pokeStats.push([stats.stat.name, stats.base_stat]);
     });
     return pokeStats;
 }
@@ -247,4 +249,20 @@ async function fetchEvoChain(pokemon) {
 function getPokemonById(pokeId) {
     const pokemon = allPokemon.find(pokemon => pokemon.id == pokeId);
     return pokemon;
+}
+
+function openPreviousDialog(pokeId) {
+    let newId = pokeId - 1;
+    if(newId < 1){
+        newId = pokeIDCounter_end;
+    }
+    openPokemonDialog(newId);
+}
+
+function openNextDialog(pokeId) {
+    let newId = pokeId + 1;
+    if(newId > pokeIDCounter_end){
+        newId = 1;
+    }
+    openPokemonDialog(newId);
 }
