@@ -10,19 +10,30 @@
 </head>
 
 <body onload="init()">
-    <header></header>
+    <header>
+        <div class="header-wrapper">
+            <img src="https://raw.githubusercontent.com/PokeAPI/media/master/logo/pokeapi_256.png" class="pokemon-logo"
+                alt="">
+            <div class="search-wrapper">
+                <input type="search" id="search_pokemon_input" class="search-input" placeholder="Search Pokémon..."
+                    oninput="searchPokemon()">
+                <p id="empty-search" class="emtpy-search" hidden>Atleast 3 characters!</p>
+            </div>
+        </div>
+    </header>
     <main data-id="content">
-        <input type="search" id="search_pokemon_input" placeholder="Suche Pokémon..." oninput="searchPokemon()">
         <div id="content" class="content"></div>
         <div class="button_wrapper">
             <button onclick="fetchMorePokemons()" hidden disabled id="load_more">load more</button>
         </div>
         <div id="loading" hidden>
             <img src="./assets/icon/pokeball_icon.png" class="loader">
-            <p>Laden...</p>
+            <p>Loading...</p>
         </div>
     </main>
-    <footer></footer>
+    <footer>
+        <p>© 2023 Developer Akademie GmbH</p>
+    </footer>
 </body>
 <dialog id="pokeinfo"></dialog>
 <script src="./script.js"></script>

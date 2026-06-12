@@ -27,30 +27,6 @@ async function fetchPokemons() {
     finishLoading();
 }
 
-function savePokemonInLocalStorage() {
-    if (!getPokemonFromLocalStorage()) {
-        localStorage.setItem("pokemon", JSON.stringify(allPokemon));
-    }
-}
-
-function getPokemonFromLocalStorage() {
-    const localPokemon = JSON.parse(localStorage.getItem("pokemon"));
-    if (localPokemon && localPokemon.length > 0) {
-        allPokemon = localPokemon;
-        return true;
-    }
-}
-
-function finishLoading() {
-    hideLoadingFeedback();
-    showLoadMoreButton();
-}
-
-function startLoading() {
-    showLoadingFeedback();
-    hideLoadMoreButton();
-}
-
 async function fetchMorePokemons() {
     pokeIDCounter_start += 20;
     pokeIDCounter_end += 20;
@@ -65,7 +41,7 @@ function appendFetchedPokemon(pokemonArray) {
 
 function searchPokemon() {
     const search_input = document.getElementById('search_pokemon_input').value.toLowerCase();
-    if (search_input.length < 3 || search_input == "") return renderPokemon(allPokemon), showLoadMoreButton();
+    if (!validateSearchInput(search_input)) return renderPokemon(allPokemon), showLoadMoreButton();
     startLoading();
     const searchedPokemon = allPokemon.filter(pokemon => pokemon.name.includes(search_input));
     if (searchedPokemon.length === 0) {
@@ -77,51 +53,16 @@ function searchPokemon() {
     hideLoadingFeedback();
 }
 
-function showNoFoundMessage() {
-    contentRef.innerHTML = getNoFoundTemplate();
-}
-
-function renderPokemon(pokemonArray) {
-    contentRef.innerHTML = getPokemonTemplate(pokemonArray);
-    finishLoading();
-}
-
 function getPokemonTemplate(pokemonArray) {
     let html = "";
     pokemonArray.forEach(pokemon => {
         let typesText = "";
         for (let i = 0; i < pokemon.types.length; i++) {
-            typesText += pokemon.types[i].type.name;
-
-            if (i < pokemon.types.length - 1) {
-                typesText += " / ";
-            }
+            typesText += `<div class="type-badge" style="background-color:${colours[pokemon.types[i].type.name]}"><p>${pokemon.types[i].type.name.toUpperCase()}</p></div>`;
         }
         html += getPokemonCardsTemplate(pokemon, typesText);
     });
     return html;
-}
-
-function hideLoadMoreButton() {
-    document.getElementById('load_more').disabled = true;
-    document.getElementById('load_more').style.display = "none";
-}
-
-function showLoadMoreButton() {
-    document.getElementById('load_more').disabled = false;
-    document.getElementById('load_more').style.display = "block";
-}
-
-function showLoadingFeedback() {
-    document.getElementById('loading').hidden = false;
-}
-
-function hideLoadingFeedback() {
-    document.getElementById('loading').hidden = true;
-}
-
-function showModal() {
-    dialogRef.showModal();
 }
 
 async function openPokemonDialog(pokeId) {
@@ -223,6 +164,47 @@ function getPokemonById(pokeId) {
     return pokemon;
 }
 
+function hideLoadMoreButton() {
+    document.getElementById('load_more').disabled = true;
+    document.getElementById('load_more').style.display = "none";
+}
+
+function showLoadMoreButton() {
+    document.getElementById('load_more').disabled = false;
+    document.getElementById('load_more').style.display = "block";
+}
+
+function showLoadingFeedback() {
+    document.getElementById('loading').hidden = false;
+}
+
+function hideLoadingFeedback() {
+    document.getElementById('loading').hidden = true;
+}
+
+function showModal() {
+    dialogRef.showModal();
+}
+
+function renderPokemon(pokemonArray) {
+    contentRef.innerHTML = getPokemonTemplate(pokemonArray);
+    finishLoading();
+}
+
+function showNoFoundMessage() {
+    contentRef.innerHTML = getNoFoundTemplate();
+}
+
+function finishLoading() {
+    hideLoadingFeedback();
+    showLoadMoreButton();
+}
+
+function startLoading() {
+    showLoadingFeedback();
+    hideLoadMoreButton();
+}
+
 function openPreviousDialog(pokeId) {
     let newId = pokeId - 1;
     if (newId < 1) {
@@ -237,4 +219,29 @@ function openNextDialog(pokeId) {
         newId = 1;
     }
     openPokemonDialog(newId);
+}
+
+function validateSearchInput(inputValue) {
+    const emptySearch = document.getElementById("empty-search");
+    const isValid = inputValue.length > 2 || inputValue == "";
+    if (!isValid) {
+        emptySearch.style.display = "block";
+    } else {
+        emptySearch.style.display = "none";
+    }
+    return isValid;
+}
+
+function savePokemonInLocalStorage() {
+    if (!getPokemonFromLocalStorage()) {
+        localStorage.setItem("pokemon", JSON.stringify(allPokemon));
+    }
+}
+
+function getPokemonFromLocalStorage() {
+    const localPokemon = JSON.parse(localStorage.getItem("pokemon"));
+    if (localPokemon && localPokemon.length > 0) {
+        allPokemon = localPokemon;
+        return true;
+    }
 }

@@ -1,7 +1,6 @@
 function getPokemonCardsTemplate(pokemon, typesText) {
     return `<article onclick="openPokemonDialog(${pokemon.id})"
-                        class="pokemon_card"
-                        style="background-color: ${colours[pokemon.types[0].type.name]};">
+                        class="pokemon-card">
 
                     <div class="name">#${pokemon.id} ${pokemon.name}</div>
 
@@ -10,15 +9,16 @@ function getPokemonCardsTemplate(pokemon, typesText) {
                     <div class="type">
                         ${typesText}
                     </div>
+                    <div class="card-background" style="background-color: ${colours[pokemon.types[0].type.name]};"></div>
                 </article>`;
 }
 
 function getNoFoundTemplate() {
     return `<div class="empty-state">
-                                <img src="./assets/icon/pokeball_icon.png" height="80">
-                                <h2>Kein Pokémon gefunden</h2>
-                                <p>Versuch einen anderen Namen oder Tippfehler zu vermeiden.</p>
-                            </div>`;
+                <img src="./assets/icon/pokeball_icon.png" height="80">
+                <h2>No Pokémon found</h2>
+                <p>Try a different name or avoid typos.</p>
+            </div>`;
 }
 
 async function getDialogTemplate(pokemon, typesText, statsHtml, evo) {
@@ -39,7 +39,7 @@ async function getDialogTemplate(pokemon, typesText, statsHtml, evo) {
                         ${await renderEvoTemplate(evo)}
                     </div>
                 </div>
-                <button data-id="prev-button" onclick="openPreviousDialog(${pokemon.id})">Vorheriger</button> <button data-id="next-button" onclick="openNextDialog(${pokemon.id})">Nächster</button>`;
+                <button data-id="prev-button" onclick="openPreviousDialog(${pokemon.id})">Previous</button> <button data-id="next-button" onclick="openNextDialog(${pokemon.id})">Next</button>`;
 }
 
 function getEvoTemplate(pokemon, names, i) {
