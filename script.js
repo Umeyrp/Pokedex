@@ -2,29 +2,34 @@ let allPokemon = [];
 let lastFetchedPokemon = [];
 let pokeIDCounter_start = 1;
 let pokeIDCounter_end = 20;
+let maxPokemonId = false;
 
 const dialogRef = document.getElementById('pokeinfo');
 const contentRef = document.getElementById('content');
 
 async function init() {
-    if (!getPokemonFromLocalStorage()) await fetchPokemons(), savePokemonInLocalStorage();;
+    if (!getPokemonFromLocalStorage()) await fetchPokemons(), savePokemonInLocalStorage();
     renderPokemon(allPokemon);
 }
 
 async function fetchPokemons() {
+    if (maxPokemonId) return hideLoadMoreButton();
     startLoading();
     const promises = [];
     try {
         for (let id = pokeIDCounter_start; id <= pokeIDCounter_end; id++) {
             promises.push(fetchPokemonById(id));
+            if (id >= 1025) { maxPokemonId = true; break; }
         }
         const fetchedPokemon = await Promise.all(promises);
         allPokemon.push(...fetchedPokemon);
         lastFetchedPokemon = fetchedPokemon;
     } catch (error) {
         console.error('Loading error:', error);
+    } finally {
+        finishLoading();
+        if (maxPokemonId) hideLoadMoreButton();
     }
-    finishLoading();
 }
 
 async function fetchMorePokemons() {
@@ -36,7 +41,6 @@ async function fetchMorePokemons() {
 
 function appendFetchedPokemon(pokemonArray) {
     contentRef.innerHTML += getPokemonTemplate(pokemonArray);
-    showLoadMoreButton();
 }
 
 function searchPokemon() {
