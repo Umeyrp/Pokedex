@@ -49,7 +49,9 @@ function searchPokemon() {
     } else {
         renderPokemon(searchedPokemon);
     }
-    hideLoadMoreButton();
+    if (search_input != "") {
+        hideLoadMoreButton();
+    }
     hideLoadingFeedback();
 }
 
@@ -186,6 +188,10 @@ function showModal() {
     dialogRef.showModal();
 }
 
+function closeModal() {
+    dialogRef.close();
+}
+
 function renderPokemon(pokemonArray) {
     contentRef.innerHTML = getPokemonTemplate(pokemonArray);
     finishLoading();
@@ -245,3 +251,14 @@ function getPokemonFromLocalStorage() {
         return true;
     }
 }
+
+//Close dialog by clicking outside
+function enableOutsideClickClose(dialogRef) {
+    dialogRef.addEventListener("click", (event) => {
+        if (event.target === dialogRef) {
+            dialogRef.close();
+        }
+    });
+}
+
+enableOutsideClickClose(dialogRef);

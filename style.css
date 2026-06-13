@@ -9,13 +9,12 @@
     /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
 
+/*Content Limit*/
 header,
 main,
 footer {
-    /*Content Limit*/
     padding: 0rem max(calc(50% - 960px), 0rem);
 }
-
 
 * {
     box-sizing: border-box;
@@ -35,8 +34,8 @@ main {
 }
 
 .pokemon-card:hover {
-    box-shadow: 1px 1px 1px #e7e7e7;
-    transform: scale(1.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    transform: translateY(-6px) scale(1.03);
 }
 
 .card-background {
@@ -54,11 +53,12 @@ main {
     justify-content: center;
     grid-template-columns: repeat(auto-fit, 250px);
     gap: 36px;
-    padding: 16px 21%;
+    padding: 16px 5%;
 }
 
 .pokemon-card {
     position: relative;
+    z-index: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -71,11 +71,6 @@ main {
     color: #000000cc;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.pokemon-card:hover {
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-    transform: translateY(-6px) scale(1.03);
 }
 
 .pokemon-card .name {
@@ -116,10 +111,12 @@ main {
 dialog {
     width: min(500px, 90%);
     margin: auto;
-    padding: 20px;
+    padding: 0;
+    overflow: hidden;
     border: none;
-    border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    font-family: Arial, sans-serif;
 }
 
 dialog::backdrop {
@@ -127,7 +124,19 @@ dialog::backdrop {
 }
 
 .detail-header {
+    position: relative;
+    padding: 20px;
     text-align: center;
+    color: white;
+}
+
+.close-dialog-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    font-size: 20px;
+    outline: none;
 }
 
 .evo-line {
@@ -144,22 +153,6 @@ dialog::backdrop {
 
 .evo-item img {
     width: 60px;
-}
-
-dialog {
-    width: min(600px, 92vw);
-    padding: 0;
-    overflow: hidden;
-    border: none;
-    border-radius: 24px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
-    font-family: Arial, sans-serif;
-}
-
-.detail-header {
-    padding: 20px;
-    text-align: center;
-    color: white;
 }
 
 .dialog-content {
@@ -221,8 +214,10 @@ button {
 }
 
 #load_more {
+    position: relative;
     margin: 20px auto;
     padding: 12px 24px;
+    overflow: hidden;
     background: #ffcb05;
     border-radius: 999px;
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
@@ -254,11 +249,6 @@ button {
 #search_pokemon_input:focus {
     box-shadow: 0 0 10px rgba(255, 203, 5, 0.4);
     border-color: #ffcb05;
-}
-
-#load_more {
-    position: relative;
-    overflow: hidden;
 }
 
 #load_more::after {
@@ -372,6 +362,8 @@ footer {
     align-items: center;
     height: 100px;
     background-color: #ffcb05;
+    font-family: monospace;
+    color: #555;
 }
 
 .emtpy-search {
