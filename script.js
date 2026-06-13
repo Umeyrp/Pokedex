@@ -162,7 +162,6 @@ function renderChart(stats) {
                 },
             },
         },
-
     });
 }
 
