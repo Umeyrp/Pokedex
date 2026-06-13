@@ -21,15 +21,18 @@ async function fetchPokemons() {
             promises.push(fetchPokemonById(id));
             if (id >= 1025) { maxPokemonId = true; break; }
         }
-        const fetchedPokemon = await Promise.all(promises);
-        allPokemon.push(...fetchedPokemon);
-        lastFetchedPokemon = fetchedPokemon;
+        await pushFetchedPokemonInArray(promises);
     } catch (error) {
         console.error('Loading error:', error);
-    } finally {
-        finishLoading();
-        if (maxPokemonId) hideLoadMoreButton();
     }
+    finishLoading();
+    if (maxPokemonId) hideLoadMoreButton();
+}
+
+async function pushFetchedPokemonInArray(promises) {
+    const fetchedPokemon = await Promise.all(promises);
+    allPokemon.push(...fetchedPokemon);
+    lastFetchedPokemon = fetchedPokemon;
 }
 
 async function fetchMorePokemons() {
