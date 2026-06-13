@@ -17,25 +17,40 @@ function getNoFoundTemplate() {
             </div>`;
 }
 
-async function getDialogTemplate(pokemon, typesText, statsHtml, evo) {
-    return `<div class="detail-header" style="background:${colours[pokemon.types[0].type.name]}">
-                    <h2 data-id="overlay-pokemon-name">#${pokemon.id} ${pokemon.name.toUpperCase()}</h2>
-                    <img data-id="dialog-image" src="${pokemon.sprites.other["official-artwork"].front_default}" width="160">
-                    <button class="close-dialog-button" onclick="closeModal()">X</button>
-            </div>
-            <div class="dialog-content">
-                <div class="section-title">Types</div>
-                <p>${typesText}</p>
-                <div class="section-title">Stats</div>
-                <div class="stats">
-                    ${statsHtml}
+async function getDialogTemplate(pokemon, typesText, stats, evo) {
+    return `<div class="pokedemon-dialog" style="--type:${colours[pokemon.types[0].type.name]};">
+                <div class="pokedemon-dialog-header">
+                    <button class="close-btn" onclick="closeModal()">✕</button>
+                    <div class="pokedemon-dialog-title">
+                        <span class="pokemon-id">#${pokemon.id}</span>
+                        <h1>${pokemon.name}</h1>
+                        <div class="pokemon-types">${typesText}</div>
+                    </div>
+                    <div class="image-wrap">
+                        <img src="${pokemon.sprites.other["official-artwork"].front_default}">
+                    </div>
                 </div>
-                <div class="section-title">Evolution</div>
-                <div class="evo-flow">
-                    ${await renderEvoTemplate(evo)}
+                <div class="pokedemon-dialog-body">
+                    <div class="tab-buttons">
+                        <button class="tab active" onclick="switchTab('stats')">Stats</button>
+                        <button class="tab" onclick="switchTab('evo')">Evolution</button>
+                    </div>
+                    <div class="tab-content">
+                        <section id="stats" class="tab-panel active">
+                            <div class="stats-card">
+                                <canvas id="myChart"></canvas>
+                            </div>
+                        </section>
+                        <section id="evo" class="tab-panel">
+                            <div class="evo-card">
+                                ${await renderEvoTemplate(evo)}
+                            </div>
+                        </section>
+                    </div>
                 </div>
-            </div>
-            <button data-id="prev-button" onclick="openPreviousDialog(${pokemon.id})">Previous</button> <button data-id="next-button" onclick="openNextDialog(${pokemon.id})">Next</button>`;
+                <button class="nav left" onclick="openPreviousDialog(${pokemon.id})">‹</button>
+                <button class="nav right" onclick="openNextDialog(${pokemon.id})">›</button>
+            </div>`;
 }
 
 function getEvoTemplate(pokemon, names, i) {
@@ -44,4 +59,3 @@ function getEvoTemplate(pokemon, names, i) {
                 <div>${names[i]}</div>
             </div>`;
 }
-

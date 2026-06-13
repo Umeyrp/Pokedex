@@ -71,9 +71,9 @@ async function openPokemonDialog(pokeId) {
     const pokemon = getPokemonById(pokeId);
     const evo = await fetchEvoChain(pokemon);
     const stats = getPokemonStats(pokemon);
-    const statsHtml = getPokemonStatsTemplate(stats);
     const typesText = getPokemonTypes(pokemon);
-    dialogRef.innerHTML = await getDialogTemplate(pokemon, typesText, statsHtml, evo);
+    dialogRef.innerHTML = await getDialogTemplate(pokemon, typesText, stats, evo);
+    renderChart(stats);
     showModal();
 }
 
@@ -91,13 +91,15 @@ function getPokemonTypes(pokemon) {
 async function renderEvoTemplate(evo) {
     let chain = evo.chain;
     let names = [];
+    let ids = [];
     while (chain) {
         names.push(chain.species.name);
+        ids.push(chain.species.url.split("/").filter(Boolean).at(-1));
         chain = chain.evolves_to[0];
     }
     let promises = [];
     for (let i = 0; i < names.length; i++) {
-        promises.push(fetchPokemonByName(names[i]));
+        promises.push(fetchPokemonById(ids[i]));
     }
     const pokemons = await Promise.all(promises);
     let html = "";
@@ -106,6 +108,62 @@ async function renderEvoTemplate(evo) {
         html += getEvoTemplate(pokemon, names, i);
     }
     return html;
+}
+
+async function renderStatsTemplate(stats) {
+    let html = "";
+    for (let i = 0; i < stats.length; i++) {
+        html += getStatsTemplate(stats[i][0], stats[i][1]);
+    }
+    return html;
+}
+
+function renderChart(stats) {
+    const ctx = document.getElementById('myChart');
+    const names = [];
+    const values = [];
+
+    for (let i = 0; i < stats.length; i++) {
+        let name = stats[i][0];
+
+        if (name === "special-attack") name = "s. attack";
+        if (name === "special-defense") name = "s. defense";
+
+        names.push(name.toUpperCase());
+        values.push(stats[i][1]);
+    }
+
+    new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: names,
+            datasets: [{
+                data: values,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            responsive: true,
+            scales: {
+                r: {
+                    ticks: {
+                        stepSize: 255,
+                        backdropColor: "transparent",
+                        color: "#666",
+                        display: false,
+                    },
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false,
+                },
+            },
+        },
+
+    });
 }
 
 async function fetchPokemonByName(name) {
@@ -126,6 +184,15 @@ async function fetchPokemonById(id) {
     return pokemon;
 }
 
+async function fetchPokemonByUrl(url) {
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error(`HTTP-Error: ${response.status}`);
+    }
+    const pokemon = await response.json();
+    return pokemon;
+}
+
 function getPokemonStats(pokemon) {
     const pokeStats = [];
     pokemon.stats.forEach(stats => {
@@ -134,25 +201,8 @@ function getPokemonStats(pokemon) {
     return pokeStats;
 }
 
-function getPokemonStatsTemplate(stats) {
-    let statsHtml = "";
-    for (let i = 0; i < stats.length; i++) {
-        statsHtml += `<div>${stats[i]}</div>`;
-    }
-    return statsHtml;
-}
-
-async function fetchPokeSpecies(url) {
-    const response = await fetch(url);
-    if (!response.ok) {
-        throw new Error(`HTTP-Error: ${response.status}`);
-    }
-    const species = await response.json();
-    return species;
-}
-
 async function fetchEvoChain(pokemon) {
-    const species = await fetchPokeSpecies(pokemon.species.url);
+    const species = await fetchPokemonByUrl(pokemon.species.url);
     const response = await fetch(species.evolution_chain.url);
     if (!response.ok) {
         throw new Error(`HTTP-Error: ${response.status}`);
@@ -225,6 +275,14 @@ function openNextDialog(pokeId) {
         newId = 1;
     }
     openPokemonDialog(newId);
+}
+
+function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+
+    document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+    document.getElementById(tab).classList.add('active');
 }
 
 function validateSearchInput(inputValue) {
