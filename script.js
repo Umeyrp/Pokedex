@@ -87,12 +87,12 @@ function getPokemonStats(pokemon) {
     return pokeStats;
 }
 
-async function renderEvoTemplate(evo) {
+async function renderEvoTemplate(evo, pokeId) {
     let chain = evo.chain;
     let names = [];
     let ids = [];
     while (chain) {
-        names.push(chain.species.name);
+        names.push(chain.species.name.toUpperCase());
         ids.push(chain.species.url.split("/").filter(Boolean).at(-1));
         chain = chain.evolves_to[0];
     }
@@ -104,7 +104,7 @@ async function renderEvoTemplate(evo) {
     let html = "";
     for (let i = 0; i < pokemons.length; i++) {
         const pokemon = pokemons[i];
-        html += getEvoTemplate(pokemon, names, i);
+        html += getEvoTemplate(pokemon, names, i, pokeId);
     }
     return html;
 }

@@ -45,7 +45,7 @@ async function getDialogTemplate(pokemon, evo) {
                         </section>
                         <section id="evo" class="tab-panel">
                             <div class="evo-card">
-                                ${await renderEvoTemplate(evo)}
+                                ${await renderEvoTemplate(evo, pokemon.id)}
                             </div>
                         </section>
                     </div>
@@ -55,10 +55,10 @@ async function getDialogTemplate(pokemon, evo) {
             </div>`;
 }
 
-function getEvoTemplate(pokemon, names, i) {
-    return `<div class="evo-item">
+function getEvoTemplate(pokemon, names, i, pokeId) {
+    return `<div class="evo-item ${(pokeId == pokemon.id) ? "evo-active": ""}" onclick="openPokemonDialog(${pokemon.id})">
                 <img src="${pokemon.sprites.other["official-artwork"].front_default}" height="80">
-                <div>${names[i]}</div>
+                <p>${names[i]}</p>
             </div>`;
 }
 

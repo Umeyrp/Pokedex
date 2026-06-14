@@ -151,8 +151,25 @@ dialog::backdrop {
 }
 
 .evo-item {
+    cursor: pointer;
     font-size: 12px;
     text-align: center;
+}
+
+.evo-item p {
+    font-family: "Pixelify Sans";
+    font-size: 1rem;
+}
+
+.evo-active {
+    color: white;
+    border-radius: 21px;
+    background: linear-gradient(2deg, var(--type), #00000052);
+    padding: 10px;
+}
+
+.evo-item:hover {
+    transform: scale(1.1);
 }
 
 .evo-item img {
@@ -189,7 +206,7 @@ dialog::backdrop {
 
 .evo-card {
     display: flex;
-    justify-content: center;
+    justify-content: space-evenly;
     align-items: center;
     gap: 12px;
     height: 167px;
@@ -561,5 +578,22 @@ footer {
     .nav {
         width: 36px;
         height: 36px;
+    }
+
+    .evo-active {
+        padding: 5px;
+    }
+
+    .evo-item p {
+        font-size: 0.7rem;
+    }
+
+    .evo-item {
+        width: 33%;
+    }
+
+    .evo-item img {
+        width: 65px;
+        height: 65px;
     }
 }
