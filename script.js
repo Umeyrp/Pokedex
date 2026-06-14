@@ -65,11 +65,7 @@ function searchPokemon() {
 function getPokemonTemplate(pokemonArray) {
     let html = "";
     pokemonArray.forEach(pokemon => {
-        let typesText = "";
-        for (let i = 0; i < pokemon.types.length; i++) {
-            typesText += `<div class="type-badge" style="background-color:${colours[pokemon.types[i].type.name]}"><p>${pokemon.types[i].type.name.toUpperCase()}</p></div>`;
-        }
-        html += getPokemonCardsTemplate(pokemon, typesText);
+        html += getPokemonCardsTemplate(pokemon);
     });
     return html;
 }
@@ -78,21 +74,17 @@ async function openPokemonDialog(pokeId) {
     const pokemon = getPokemonById(pokeId);
     const evo = await fetchEvoChain(pokemon);
     const stats = getPokemonStats(pokemon);
-    const typesText = getPokemonTypes(pokemon);
-    dialogRef.innerHTML = await getDialogTemplate(pokemon, typesText, stats, evo);
+    dialogRef.innerHTML = await getDialogTemplate(pokemon, evo);
     renderChart(stats);
     showModal();
 }
 
-function getPokemonTypes(pokemon) {
-    let typesText = "";
-    for (let i = 0; i < pokemon.types.length; i++) {
-        typesText += pokemon.types[i].type.name;
-        if (i < pokemon.types.length - 1) {
-            typesText += " / ";
-        }
-    }
-    return typesText;
+function getPokemonStats(pokemon) {
+    const pokeStats = [];
+    pokemon.stats.forEach(stats => {
+        pokeStats.push([stats.stat.name, stats.base_stat]);
+    });
+    return pokeStats;
 }
 
 async function renderEvoTemplate(evo) {
@@ -154,13 +146,18 @@ function renderChart(stats) {
             responsive: true,
             scales: {
                 r: {
+                    min: 0,
+                    max: 255,
                     ticks: {
-                        stepSize: 255,
-                        backdropColor: "transparent",
-                        color: "#666",
+                        stepSize: 100,
+                        color: "#5555",
                         display: false,
                     },
-                    beginAtZero: true
+                    beginAtZero: true,
+                    pointLabels: {
+                        color: "#333",
+                        font: { size: 16, weight:600, family: "Pixelify Sans" },
+                    },
                 }
             },
             plugins: {
@@ -197,14 +194,6 @@ async function fetchPokemonByUrl(url) {
     }
     const pokemon = await response.json();
     return pokemon;
-}
-
-function getPokemonStats(pokemon) {
-    const pokeStats = [];
-    pokemon.stats.forEach(stats => {
-        pokeStats.push([stats.stat.name, stats.base_stat]);
-    });
-    return pokeStats;
 }
 
 async function fetchEvoChain(pokemon) {

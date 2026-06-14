@@ -1,9 +1,9 @@
-function getPokemonCardsTemplate(pokemon, typesText) {
+function getPokemonCardsTemplate(pokemon) {
     return `<button data-id="card" class="pokemon-card" onclick="openPokemonDialog(${pokemon.id})">
                 <div class="name">#${pokemon.id} ${pokemon.name}</div>
                 <img data-id="card-image" src="${pokemon.sprites.other["official-artwork"].front_default}" height="80">
                 <div class="type">
-                    ${typesText}
+                    ${getPokemonTypeTemplate(pokemon)}
                 </div>
                 <div class="card-background" style="background-color: ${colours[pokemon.types[0].type.name]};"></div>
             </button>`;
@@ -17,14 +17,16 @@ function getNoFoundTemplate() {
             </div>`;
 }
 
-async function getDialogTemplate(pokemon, typesText, stats, evo) {
+async function getDialogTemplate(pokemon, evo) {
     return `<div class="pokedemon-dialog" style="--type:${colours[pokemon.types[0].type.name]};">
                 <div class="pokedemon-dialog-header">
                     <button class="close-btn" onclick="closeModal()">✕</button>
                     <div class="pokedemon-dialog-title">
                         <span class="pokemon-id">#${pokemon.id}</span>
                         <h1>${pokemon.name}</h1>
-                        <div class="pokemon-types">${typesText}</div>
+                        <div class="pokemon-types">
+                            ${getPokemonTypeTemplateDialog(pokemon)}
+                        </div>
                     </div>
                     <div class="image-wrap">
                         <img src="${pokemon.sprites.other["official-artwork"].front_default}">
@@ -58,4 +60,22 @@ function getEvoTemplate(pokemon, names, i) {
                 <img src="${pokemon.sprites.other["official-artwork"].front_default}" height="80">
                 <div>${names[i]}</div>
             </div>`;
+}
+
+function getPokemonTypeTemplate(pokemon) {
+    let html = "";
+    for (let i = 0; i < pokemon.types.length; i++) {
+        html += `<div class="type-badge" style="background-color:${colours[pokemon.types[i].type.name]}">
+                            <p>${pokemon.types[i].type.name.toUpperCase()}</p>
+                        </div>`;
+    }
+    return html;
+}
+
+function getPokemonTypeTemplateDialog(pokemon) {
+    let html = "";
+    for (let i = 0; i < pokemon.types.length; i++) {
+        html += `<p class="type-badge-dialog" style="background-color:${colours[pokemon.types[i].type.name]}">${pokemon.types[i].type.name.toUpperCase()}</p>`;
+    }
+    return html;
 }
