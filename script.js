@@ -71,7 +71,7 @@ function getPokemonTemplate(pokemonArray) {
 }
 
 async function openPokemonDialog(pokeId) {
-    const pokemon = getPokemonById(pokeId);
+    const pokemon = await getPokemonById(pokeId);
     const evo = await fetchEvoChain(pokemon);
     const stats = getPokemonStats(pokemon);
     dialogRef.innerHTML = await getDialogTemplate(pokemon, evo);
@@ -206,8 +206,11 @@ async function fetchEvoChain(pokemon) {
     return evo;
 }
 
-function getPokemonById(pokeId) {
-    const pokemon = allPokemon.find(pokemon => pokemon.id == pokeId);
+async function getPokemonById(pokeId) {
+    let pokemon = allPokemon.find(pokemon => pokemon.id == pokeId);
+    if(!pokemon){
+        pokemon = await fetchPokemonById(pokeId);
+    }
     return pokemon;
 }
 
