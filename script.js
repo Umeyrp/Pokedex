@@ -1,8 +1,9 @@
 let allPokemon = [];
 let lastFetchedPokemon = [];
 let currentPokemons = [];
+const pokemonFirstLoad = 20;
 let pokeIDCounter_start = 1;
-let pokeIDCounter_end = 20;
+let pokeIDCounter_end = pokemonFirstLoad;
 let maxPokemonId = false;
 
 const dialogRef = document.getElementById('pokeinfo');
@@ -34,7 +35,9 @@ async function pushFetchedPokemonInArray(promises) {
     const startIndex = allPokemon.length;
     const fetchedPokemon = await Promise.all(promises);
     fetchedPokemon.forEach((pokemon, index) => {
-        pokemon.globalIndex = startIndex + index;
+        if (pokemon.id > pokemonFirstLoad) {
+            pokemon.globalIndex = startIndex + index;
+        }
     });
     allPokemon.push(...fetchedPokemon);
     currentPokemons = allPokemon;
@@ -42,8 +45,8 @@ async function pushFetchedPokemonInArray(promises) {
 }
 
 async function fetchMorePokemons() {
-    pokeIDCounter_start += 20;
-    pokeIDCounter_end += 20;
+    pokeIDCounter_start += pokemonFirstLoad;
+    pokeIDCounter_end += pokemonFirstLoad;
     await fetchPokemons();
     appendFetchedPokemon(lastFetchedPokemon);
 }
@@ -83,7 +86,7 @@ async function openPokemonDialog(pokeId, index) {
     const evo = await fetchEvoChain(pokemon);
     const stats = getPokemonStats(pokemon);
     dialogRef.innerHTML = await getDialogTemplate(pokemon, evo, index);
-    if (index == -1) hidePaginationButtons();
+    if (index == -1 || currentPokemons.length == 1) hidePaginationButtons();
     renderChart(stats);
     showModal();
 }
