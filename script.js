@@ -1,5 +1,6 @@
 let allPokemon = [];
 let lastFetchedPokemon = [];
+let currentPokemons = [];
 let pokeIDCounter_start = 1;
 let pokeIDCounter_end = 20;
 let maxPokemonId = false;
@@ -30,8 +31,13 @@ async function fetchPokemons() {
 }
 
 async function pushFetchedPokemonInArray(promises) {
+    const startIndex = allPokemon.length;
     const fetchedPokemon = await Promise.all(promises);
+    fetchedPokemon.forEach((pokemon, index) => {
+        pokemon.globalIndex = startIndex + index;
+    });
     allPokemon.push(...fetchedPokemon);
+    currentPokemons = allPokemon;
     lastFetchedPokemon = fetchedPokemon;
 }
 
@@ -54,7 +60,8 @@ function searchPokemon() {
     if (searchedPokemon.length === 0) {
         showNoFoundMessage();
     } else {
-        renderPokemon(searchedPokemon);
+        currentPokemons = searchedPokemon;
+        renderPokemon(currentPokemons);
     }
     if (search_input != "") {
         hideLoadMoreButton();
@@ -64,17 +71,19 @@ function searchPokemon() {
 
 function getPokemonTemplate(pokemonArray) {
     let html = "";
-    pokemonArray.forEach(pokemon => {
-        html += getPokemonCardsTemplate(pokemon);
+    pokemonArray.forEach((pokemon, index) => {
+        if (pokemon.globalIndex) index = pokemon.globalIndex;
+        html += getPokemonCardsTemplate(pokemon, index);
     });
     return html;
 }
 
-async function openPokemonDialog(pokeId) {
+async function openPokemonDialog(pokeId, index) {
     const pokemon = await getPokemonById(pokeId);
     const evo = await fetchEvoChain(pokemon);
     const stats = getPokemonStats(pokemon);
-    dialogRef.innerHTML = await getDialogTemplate(pokemon, evo);
+    dialogRef.innerHTML = await getDialogTemplate(pokemon, evo, index);
+    if (index == -1) hidePaginationButtons();
     renderChart(stats);
     showModal();
 }
@@ -88,23 +97,53 @@ function getPokemonStats(pokemon) {
 }
 
 async function renderEvoTemplate(evo, pokeId) {
-    let chain = evo.chain;
-    let names = [];
-    let ids = [];
-    while (chain) {
-        names.push(chain.species.name.toUpperCase());
-        ids.push(chain.species.url.split("/").filter(Boolean).at(-1));
-        chain = chain.evolves_to[0];
-    }
-    let promises = [];
-    for (let i = 0; i < names.length; i++) {
+    const ids = getPokemonEvoChain(evo.chain);
+    const promises = [];
+    for (let i = 0; i < ids.length; i++) {
         promises.push(fetchPokemonById(ids[i]));
     }
     const pokemons = await Promise.all(promises);
     let html = "";
     for (let i = 0; i < pokemons.length; i++) {
         const pokemon = pokemons[i];
-        html += getEvoTemplate(pokemon, names, i, pokeId);
+        const index = getIndexByPokemonId(pokemon.id);
+        html += getEvoTemplate(pokemon, pokeId, index);
+    }
+    return html;
+}
+
+function getPokemonEvoChain(chain) {
+    let ids = [];
+    while (chain) {
+        ids.push(chain.species.url.split("/").filter(Boolean).at(-1));
+        chain = chain.evolves_to[0];
+    }
+    return ids;
+}
+
+function getIndexByPokemonId(pokeId) {
+    const index = currentPokemons.findIndex((pokemon) => pokemon.id == pokeId);
+    return index;
+}
+
+function hidePaginationButtons() {
+    document.querySelectorAll(".nav").forEach(button => {
+        button.style.display = "none";
+    });
+}
+
+function renderPokemonTypeTemplateDialog(pokemon) {
+    let html = "";
+    for (let i = 0; i < pokemon.types.length; i++) {
+        html += getPokemonTypeTemplateDialog(pokemon, i);
+    }
+    return html;
+}
+
+function renderPokemonTypeTemplate(pokemon) {
+    let html = "";
+    for (let i = 0; i < pokemon.types.length; i++) {
+        html += getPokemonTypeTemplate(pokemon, i);
     }
     return html;
 }
@@ -156,7 +195,7 @@ function renderChart(stats) {
                     beginAtZero: true,
                     pointLabels: {
                         color: "#333",
-                        font: { size: 16, weight:600, family: "Pixelify Sans" },
+                        font: { size: 16, weight: 600, family: "Pixelify Sans" },
                     },
                 }
             },
@@ -208,7 +247,7 @@ async function fetchEvoChain(pokemon) {
 
 async function getPokemonById(pokeId) {
     let pokemon = allPokemon.find(pokemon => pokemon.id == pokeId);
-    if(!pokemon){
+    if (!pokemon) {
         pokemon = await fetchPokemonById(pokeId);
     }
     return pokemon;
@@ -241,7 +280,8 @@ function closeModal() {
 }
 
 function renderPokemon(pokemonArray) {
-    contentRef.innerHTML = getPokemonTemplate(pokemonArray);
+    currentPokemons = pokemonArray;
+    contentRef.innerHTML = getPokemonTemplate(currentPokemons);
     finishLoading();
 }
 
@@ -259,20 +299,24 @@ function startLoading() {
     hideLoadMoreButton();
 }
 
-function openPreviousDialog(pokeId) {
-    let newId = pokeId - 1;
-    if (newId < 1) {
-        newId = pokeIDCounter_end;
+function openPreviousDialog(index) {
+    const lastIndex = currentPokemons.length - 1;
+    let newIndex = index - 1;
+    if (newIndex < 0) {
+        newIndex = lastIndex;
     }
-    openPokemonDialog(newId);
+    const pokeId = currentPokemons[newIndex].id
+    openPokemonDialog(pokeId, newIndex);
 }
 
-function openNextDialog(pokeId) {
-    let newId = pokeId + 1;
-    if (newId > pokeIDCounter_end) {
-        newId = 1;
+function openNextDialog(index) {
+    const lastIndex = currentPokemons.length - 1;
+    let newIndex = index + 1;
+    if (index == lastIndex) {
+        newIndex = 0;
     }
-    openPokemonDialog(newId);
+    const pokeId = currentPokemons[newIndex].id
+    openPokemonDialog(pokeId, newIndex);
 }
 
 function switchTab(tab) {
@@ -308,7 +352,6 @@ function getPokemonFromLocalStorage() {
     }
 }
 
-//Close dialog by clicking outside
 function enableOutsideClickClose(dialogRef) {
     dialogRef.addEventListener("click", (event) => {
         if (event.target === dialogRef) {

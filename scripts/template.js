@@ -1,9 +1,9 @@
-function getPokemonCardsTemplate(pokemon) {
-    return `<button data-id="card" class="pokemon-card" onclick="openPokemonDialog(${pokemon.id})">
+function getPokemonCardsTemplate(pokemon, index) {
+    return `<button data-id="card" class="pokemon-card" onclick="openPokemonDialog(${pokemon.id},${index})">
                 <div class="name">#${pokemon.id} ${pokemon.name}</div>
                 <img data-id="card-image" src="${pokemon.sprites.other["official-artwork"].front_default}" height="80">
                 <div class="type">
-                    ${getPokemonTypeTemplate(pokemon)}
+                    ${renderPokemonTypeTemplate(pokemon)}
                 </div>
                 <div class="card-background" style="background-color: ${colours[pokemon.types[0].type.name]};"></div>
             </button>`;
@@ -17,7 +17,7 @@ function getNoFoundTemplate() {
             </div>`;
 }
 
-async function getDialogTemplate(pokemon, evo) {
+async function getDialogTemplate(pokemon, evo, index) {
     return `<div class="pokedemon-dialog" style="--type:${colours[pokemon.types[0].type.name]};">
                 <div class="pokedemon-dialog-header">
                     <button class="close-btn" onclick="closeModal()">✕</button>
@@ -25,7 +25,7 @@ async function getDialogTemplate(pokemon, evo) {
                         <span class="pokemon-id">#${pokemon.id}</span>
                         <h1>${pokemon.name}</h1>
                         <div class="pokemon-types">
-                            ${getPokemonTypeTemplateDialog(pokemon)}
+                            ${renderPokemonTypeTemplateDialog(pokemon)}
                         </div>
                     </div>
                     <div class="image-wrap">
@@ -50,32 +50,24 @@ async function getDialogTemplate(pokemon, evo) {
                         </section>
                     </div>
                 </div>
-                <button class="nav left" onclick="openPreviousDialog(${pokemon.id})">‹</button>
-                <button class="nav right" onclick="openNextDialog(${pokemon.id})">›</button>
+                <button class="nav left" onclick="openPreviousDialog(${index})">‹</button>
+                <button class="nav right" onclick="openNextDialog(${index})">›</button>
             </div>`;
 }
 
-function getEvoTemplate(pokemon, names, i, pokeId) {
-    return `<div class="evo-item ${(pokeId == pokemon.id) ? "evo-active" : ""}" onclick="openPokemonDialog(${pokemon.id})">
+function getEvoTemplate(pokemon, pokeId, currentIndex) {
+    return `<div class="evo-item ${(pokeId == pokemon.id) ? "evo-active" : ""}" onclick="openPokemonDialog(${pokemon.id}, ${currentIndex})">
                 <img src="${pokemon.sprites.other["official-artwork"].front_default}" height="80">
-                <p>${names[i]}</p>
+                <p>${pokemon.name.toUpperCase()}</p>
             </div>`;
 }
 
-function getPokemonTypeTemplate(pokemon) {
-    let html = "";
-    for (let i = 0; i < pokemon.types.length; i++) {
-        html += `<div class="type-badge" style="background-color:${colours[pokemon.types[i].type.name]}">
+function getPokemonTypeTemplate(pokemon, i) {
+    return `<div class="type-badge" style="background-color:${colours[pokemon.types[i].type.name]}">
                             <p>${pokemon.types[i].type.name.toUpperCase()}</p>
                         </div>`;
-    }
-    return html;
 }
 
-function getPokemonTypeTemplateDialog(pokemon) {
-    let html = "";
-    for (let i = 0; i < pokemon.types.length; i++) {
-        html += `<p class="type-badge-dialog" style="background-color:${colours[pokemon.types[i].type.name]}">${pokemon.types[i].type.name.toUpperCase()}</p>`;
-    }
-    return html;
+function getPokemonTypeTemplateDialog(pokemon, i) {
+    return `<p class="type-badge-dialog" style="background-color:${colours[pokemon.types[i].type.name]}">${pokemon.types[i].type.name.toUpperCase()}</p>`;
 }
