@@ -151,9 +151,9 @@ dialog::backdrop {
 }
 
 .evo-item {
-    cursor: pointer;
     font-size: 12px;
     text-align: center;
+    cursor: pointer;
 }
 
 .evo-item p {
@@ -162,10 +162,10 @@ dialog::backdrop {
 }
 
 .evo-active {
-    color: white;
-    border-radius: 21px;
-    background: linear-gradient(2deg, var(--type), #00000052);
     padding: 10px;
+    background: linear-gradient(2deg, var(--type), #00000052);
+    border-radius: 21px;
+    color: white;
 }
 
 .evo-item:hover {
@@ -251,23 +251,6 @@ button {
 
 #load_more:active {
     transform: scale(0.96);
-}
-
-#search_pokemon_input {
-    display: block;
-    width: min(400px, 90%);
-    margin: 20px auto;
-    padding: 12px 16px;
-    border: 2px solid #ddd;
-    border-radius: 999px;
-    font-size: 14px;
-    outline: none;
-    transition: 0.2s;
-}
-
-#search_pokemon_input:focus {
-    box-shadow: 0 0 10px rgba(255, 203, 5, 0.4);
-    border-color: #ffcb05;
 }
 
 #load_more::after {
@@ -360,54 +343,6 @@ button {
     50% {
         transform: translateY(-8px);
     }
-}
-
-.header-wrapper {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.pokemon-logo {
-    width: min(300px, 90%);
-    height: 100px;
-    margin: auto;
-    margin-top: 20px;
-}
-
-footer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100px;
-    background-color: #ffcb05;
-    font-family: monospace;
-    color: #555;
-}
-
-.emtpy-search {
-    position: absolute;
-    bottom: -3px;
-    left: 50%;
-    padding: .25em .4em;
-    background-color: #dc3545;
-    border-radius: .25rem;
-    font-size: 75%;
-    font-weight: 700;
-    line-height: 1;
-    text-align: center;
-    text-align: center;
-    color: red;
-    color: #fff;
-    transform: translate(-50%);
-    white-space: nowrap;
-    vertical-align: baseline;
-}
-
-.search-wrapper {
-    position: relative;
-    display: flex;
-    flex-direction: column;
 }
 
 .pokedemon-dialog {
@@ -559,6 +494,138 @@ footer {
 
 .nav.right {
     right: 13px;
+}
+
+header {
+    position: sticky;
+    z-index: 100;
+    top: 0;
+    background: linear-gradient(135deg, #ffcb05, #f5b700);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.header-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+    padding: 16px 20px;
+}
+
+.emtpy-search {
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    padding: .25em .4em;
+    background-color: #dc3545;
+    border-radius: .25rem;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    text-align: center;
+    color: red;
+    color: #fff;
+    transform: translate(-50%);
+    white-space: nowrap;
+    vertical-align: baseline;
+}
+
+.logo-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.pokemon-logo {
+    width: min(227px, 90%);
+    height: auto;
+    margin: 0;
+}
+
+.header-badge {
+    position: relative;
+    top: -30px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-family: 'Pixelify Sans';
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    color: #1f1f1f;
+}
+
+#search_pokemon_input {
+    display: block;
+    width: min(320px, 80%);
+    margin: -10px auto 10px;
+    padding: 14px 20px;
+    background: white;
+    border: none;
+    border-radius: 999px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    font-size: 15px;
+    transition: 0.2s;
+}
+
+.search-wrapper {
+    width: 100%;
+}
+
+#search_pokemon_input:focus {
+    box-shadow: 0 0 0 4px rgba(42, 117, 187, 0.2);
+    outline: none;
+    transform: translateY(-1px);
+}
+
+footer {
+    margin-top: 40px;
+    background: #1f1f1f;
+    color: #e5e5e5;
+}
+
+.footer-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin: 0 auto;
+    padding: 24px 20px;
+}
+
+.footer-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+}
+
+.footer-left img {
+    width: 28px;
+    height: 28px;
+}
+
+.footer-right {
+    font-size: 14px;
+    text-align: right;
+    color: #bdbdbd;
+}
+
+.footer-right p {
+    margin: 2px 0;
+}
+
+@media (max-width: 600px) {
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .footer-right {
+        text-align: center;
+    }
 }
 
 @media screen and (max-width: 600px) {
