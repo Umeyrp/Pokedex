@@ -1,6 +1,7 @@
 let allPokemon = [];
 let lastFetchedPokemon = [];
 let currentPokemons = [];
+let allPokemonNames = [];
 const pokemonFirstLoad = 20;
 let pokeIDCounter_start = 1;
 let pokeIDCounter_end = pokemonFirstLoad;
@@ -12,6 +13,7 @@ const contentRef = document.getElementById('content');
 async function init() {
     if (!getPokemonFromLocalStorage()) await fetchPokemons(), savePokemonInLocalStorage();
     renderPokemon(allPokemon);
+    getAllPokemonNames();
 }
 
 async function fetchPokemons() {
@@ -55,11 +57,33 @@ function appendFetchedPokemon(pokemonArray) {
     contentRef.innerHTML += getPokemonTemplate(pokemonArray);
 }
 
-function searchPokemon() {
+async function getAllPokemonNames() {
+    const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0");
+    if (!response.ok) {
+        throw new Error(`HTTP-Error: ${response.status}`);
+    }
+    const data = await response.json();
+    allPokemonNames = data.results;
+}
+
+async function fetchSearchedPokemon(search_input, searchedAlready) {
+    let searchedPokemon_2 = allPokemonNames.filter(pokemon => pokemon.name.includes(search_input)).map(pokemon => pokemon.url.split("/").filter(Boolean).at(-1));
+    searchedPokemon_2 = searchedPokemon_2.slice(searchedAlready);
+    const promises = searchedPokemon_2.map(pokeId => {
+        return fetchPokemonById(pokeId);
+    });
+    const fetchedSearchedPokemon = await Promise.all(promises);
+    return fetchedSearchedPokemon;
+}
+
+async function searchPokemon() {
     const search_input = document.getElementById('search_pokemon_input').value.toLowerCase();
     if (!validateSearchInput(search_input)) return renderPokemon(allPokemon), showLoadMoreButton();
     startLoading();
-    const searchedPokemon = allPokemon.filter(pokemon => pokemon.name.includes(search_input));
+    const searchedPokemon_1 = allPokemon.filter(pokemon => pokemon.name.includes(search_input));
+    const searchedPokemon_2 = await fetchSearchedPokemon(search_input, searchedPokemon_1.length);
+    const searchedPokemon = [...searchedPokemon_1, ...searchedPokemon_2];
+
     if (searchedPokemon.length === 0) {
         showNoFoundMessage();
     } else {
@@ -331,12 +355,12 @@ function switchTab(tab) {
 }
 
 function validateSearchInput(inputValue) {
-    const emptySearch = document.getElementById("empty-search");
-    const isValid = inputValue.length > 2 || inputValue == "";
+    const warning = document.getElementById("search-warning");
+    const isValid = inputValue.length > 2;
     if (!isValid) {
-        emptySearch.style.display = "block";
+        warning.style.display = inputValue ? "block" : "none";
     } else {
-        emptySearch.style.display = "none";
+        warning.style.display = "none";
     }
     return isValid;
 }

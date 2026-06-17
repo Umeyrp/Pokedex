@@ -398,6 +398,7 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-shrink: 0;
     width: 140px;
     height: 140px;
     background: rgba(255, 255, 255, 0.2);
@@ -512,7 +513,7 @@ header {
     padding: 16px 20px;
 }
 
-.emtpy-search {
+.search-warning {
     position: absolute;
     bottom: 4px;
     left: 50%;
