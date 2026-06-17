@@ -116,11 +116,9 @@ async function openPokemonDialog(pokeId, index) {
 }
 
 function getPokemonStats(pokemon) {
-    const pokeStats = [];
-    pokemon.stats.forEach(stats => {
-        pokeStats.push([stats.stat.name, stats.base_stat]);
-    });
-    return pokeStats;
+    return pokemon.stats.map(stats =>
+        [stats.stat.name, stats.base_stat]
+    );
 }
 
 async function renderEvoTemplate(evo, pokeId) {
@@ -390,3 +388,30 @@ function enableOutsideClickClose(dialogRef) {
 }
 
 enableOutsideClickClose(dialogRef);
+
+const header = document.querySelector('header');
+const add_threshold = 120;
+const remove_threshold = 50;
+
+function handleScroll() {
+    const y = window.scrollY;
+    const isScrolled = header.classList.contains('is-scrolled');
+
+    if (!isScrolled && y > add_threshold) {
+        header.classList.add('is-scrolled');
+    } else if (isScrolled && y < remove_threshold) {
+        header.classList.remove('is-scrolled');
+    }
+}
+window.addEventListener('scroll', handleScroll, { passive: true });
+
+const input = document.getElementById("search_pokemon_input");
+input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        searchPokemon();
+        setTimeout(() => {
+            input.blur();
+        }, 50);
+    }
+});

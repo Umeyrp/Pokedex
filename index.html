@@ -15,14 +15,13 @@
             <div class="logo-wrapper">
                 <img src="https://logos-world.net/wp-content/uploads/2020/05/Pokemon-Logo.png" class="pokemon-logo"
                     alt="Pokédex Logo">
-
                 <span class="header-badge">Pokédex</span>
             </div>
-
             <div class="search-wrapper">
-                <input type="search" autocomplete="off" data-id="search-input" id="search_pokemon_input"
-                    class="search-input" placeholder="Search Pokémon..." oninput="searchPokemon()">
-
+                <form id="searchForm">
+                    <input type="search" autocomplete="off" data-id="search-input" id="search_pokemon_input"
+                        class="search-input" placeholder="Search Pokémon..." oninput="searchPokemon()">
+                </form>
                 <p id="search-warning" class="search-warning" hidden>
                     At least 3 characters!
                 </p>
