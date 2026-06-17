@@ -1,7 +1,7 @@
 function getPokemonCardsTemplate(pokemon, index) {
     return `<button data-id="card" class="pokemon-card" onclick="openPokemonDialog(${pokemon.id},${index})">
                 <div class="name">#${pokemon.id} ${pokemon.name}</div>
-                <img data-id="card-image" src="${pokemon.sprites.other["official-artwork"].front_default}" height="80">
+                <img data-id="card-image" src="${(!pokemon.sprites.other["official-artwork"].front_default) ? pokemon.sprites.other["home"].front_default : pokemon.sprites.other["official-artwork"].front_default}" height="80">
                 <div class="type">
                     ${renderPokemonTypeTemplate(pokemon)}
                 </div>

@@ -286,8 +286,10 @@ function hideLoadMoreButton() {
 }
 
 function showLoadMoreButton() {
-    document.getElementById('load_more').disabled = false;
-    document.getElementById('load_more').style.display = "block";
+    if (!maxPokemonId) {
+        document.getElementById('load_more').disabled = false;
+        document.getElementById('load_more').style.display = "block";
+    }
 }
 
 function showLoadingFeedback() {
