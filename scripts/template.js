@@ -29,7 +29,7 @@ async function getDialogTemplate(pokemon, evo, index) {
                         </div>
                     </div>
                     <div class="image-wrap">
-                        <img src="${(pokemon.sprites.other["showdown"].front_default == null) ? pokemon.sprites.other["official-artwork"].front_default : pokemon.sprites.other["showdown"].front_default}">
+                        <img src="${(!pokemon.sprites.other["showdown"].front_default) ? ((!pokemon.sprites.other["official-artwork"].front_default) ? pokemon.sprites.other["home"].front_default : pokemon.sprites.other["official-artwork"].front_default) : pokemon.sprites.other["showdown"].front_default}">
                     </div>
                 </div>
                 <div class="pokedemon-dialog-body">
