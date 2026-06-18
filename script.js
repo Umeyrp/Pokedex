@@ -58,11 +58,7 @@ function appendFetchedPokemon(pokemonArray) {
 }
 
 async function getAllPokemonNames() {
-    const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0");
-    if (!response.ok) {
-        throw new Error(`HTTP-Error: ${response.status}`);
-    }
-    const data = await response.json();
+    const data = await fetchJson("https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0");
     allPokemonNames = data.results;
 }
 
@@ -97,12 +93,10 @@ async function searchPokemon() {
 }
 
 function getPokemonTemplate(pokemonArray) {
-    let html = "";
-    pokemonArray.forEach((pokemon, index) => {
+    return pokemonArray.map((pokemon, index) => {
         if (pokemon.globalIndex) index = pokemon.globalIndex;
-        html += getPokemonCardsTemplate(pokemon, index);
-    });
-    return html;
+        return getPokemonCardsTemplate(pokemon, index);
+    }).join("");
 }
 
 async function openPokemonDialog(pokeId, index) {
@@ -123,18 +117,11 @@ function getPokemonStats(pokemon) {
 
 async function renderEvoTemplate(evo, pokeId) {
     const ids = getPokemonEvoChain(evo.chain);
-    const promises = [];
-    for (let i = 0; i < ids.length; i++) {
-        promises.push(fetchPokemonById(ids[i]));
-    }
-    const pokemons = await Promise.all(promises);
-    let html = "";
-    for (let i = 0; i < pokemons.length; i++) {
-        const pokemon = pokemons[i];
+    const pokemons = await Promise.all(ids.map(fetchPokemonById));
+    return pokemons.map((pokemon) => {
         const index = getIndexByPokemonId(pokemon.id);
-        html += getEvoTemplate(pokemon, pokeId, index);
-    }
-    return html;
+        return getEvoTemplate(pokemon, pokeId, index);
+    }).join("");
 }
 
 function getPokemonEvoChain(chain) {
@@ -158,27 +145,11 @@ function hidePaginationButtons() {
 }
 
 function renderPokemonTypeTemplateDialog(pokemon) {
-    let html = "";
-    for (let i = 0; i < pokemon.types.length; i++) {
-        html += getPokemonTypeTemplateDialog(pokemon, i);
-    }
-    return html;
+    return pokemon.types.map((_, i) => getPokemonTypeTemplateDialog(pokemon, i)).join("");
 }
 
 function renderPokemonTypeTemplate(pokemon) {
-    let html = "";
-    for (let i = 0; i < pokemon.types.length; i++) {
-        html += getPokemonTypeTemplate(pokemon, i);
-    }
-    return html;
-}
-
-async function renderStatsTemplate(stats) {
-    let html = "";
-    for (let i = 0; i < stats.length; i++) {
-        html += getStatsTemplate(stats[i][0], stats[i][1]);
-    }
-    return html;
+    return pokemon.types.map((_, i) => getPokemonTypeTemplate(pokemon, i)).join("");
 }
 
 function renderChart(stats) {
@@ -233,41 +204,29 @@ function renderChart(stats) {
     });
 }
 
-async function fetchPokemonByName(name) {
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
-    if (!response.ok) {
-        throw new Error(`HTTP-Error: ${response.status}`);
-    }
-    const pokemon = await response.json();
-    return pokemon;
-}
-
-async function fetchPokemonById(id) {
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-    if (!response.ok) {
-        throw new Error(`HTTP-Error: ${response.status}`);
-    }
-    const pokemon = await response.json();
-    return pokemon;
-}
-
-async function fetchPokemonByUrl(url) {
+async function fetchJson(url) {
     const response = await fetch(url);
     if (!response.ok) {
         throw new Error(`HTTP-Error: ${response.status}`);
     }
-    const pokemon = await response.json();
-    return pokemon;
+    return response.json();
+}
+
+async function fetchPokemonByName(name) {
+    return fetchJson(`https://pokeapi.co/api/v2/pokemon/${name}`);
+}
+
+async function fetchPokemonById(id) {
+    return fetchJson(`https://pokeapi.co/api/v2/pokemon/${id}`);
+}
+
+async function fetchPokemonByUrl(url) {
+    return fetchJson(url);
 }
 
 async function fetchEvoChain(pokemon) {
     const species = await fetchPokemonByUrl(pokemon.species.url);
-    const response = await fetch(species.evolution_chain.url);
-    if (!response.ok) {
-        throw new Error(`HTTP-Error: ${response.status}`);
-    }
-    const evo = await response.json();
-    return evo;
+    return fetchJson(species.evolution_chain.url);;
 }
 
 async function getPokemonById(pokeId) {
@@ -326,24 +285,18 @@ function startLoading() {
     hideLoadMoreButton();
 }
 
+function openDialogAtOffset(index, offset) {
+    const count = currentPokemons.length;
+    const newIndex = (index + offset + count) % count;
+    openPokemonDialog(currentPokemons[newIndex].id, newIndex);
+}
+
 function openPreviousDialog(index) {
-    const lastIndex = currentPokemons.length - 1;
-    let newIndex = index - 1;
-    if (newIndex < 0) {
-        newIndex = lastIndex;
-    }
-    const pokeId = currentPokemons[newIndex].id
-    openPokemonDialog(pokeId, newIndex);
+    openDialogAtOffset(index, -1);
 }
 
 function openNextDialog(index) {
-    const lastIndex = currentPokemons.length - 1;
-    let newIndex = index + 1;
-    if (index == lastIndex) {
-        newIndex = 0;
-    }
-    const pokeId = currentPokemons[newIndex].id
-    openPokemonDialog(pokeId, newIndex);
+    openDialogAtOffset(index, 1);
 }
 
 function switchTab(tab) {
