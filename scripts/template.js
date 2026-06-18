@@ -1,7 +1,7 @@
 function getPokemonCardsTemplate(pokemon, index) {
     return `<button data-id="card" class="pokemon-card" onclick="openPokemonDialog(${pokemon.id},${index})">
                 <div class="name">#${pokemon.id} ${pokemon.name}</div>
-                <img data-id="card-image" src="${(!pokemon.sprites.other["official-artwork"].front_default) ? pokemon.sprites.other["home"].front_default : pokemon.sprites.other["official-artwork"].front_default}" height="80">
+                <img data-id="card-image" src="${(!pokemon.sprites.other["official-artwork"].front_default) ? (!pokemon.sprites.other["home"].front_default ? "https://www.freeiconspng.com/uploads/no-image-icon-4.png" : pokemon.sprites.other["home"].front_default) : pokemon.sprites.other["official-artwork"].front_default}" height="80">
                 <div class="type">
                     ${renderPokemonTypeTemplate(pokemon)}
                 </div>
@@ -29,7 +29,7 @@ async function getDialogTemplate(pokemon, evo, index) {
                         </div>
                     </div>
                     <div class="image-wrap">
-                        <img src="${(!pokemon.sprites.other["showdown"].front_default) ? ((!pokemon.sprites.other["official-artwork"].front_default) ? pokemon.sprites.other["home"].front_default : pokemon.sprites.other["official-artwork"].front_default) : pokemon.sprites.other["showdown"].front_default}">
+                        <img src="${((!pokemon.sprites.other["showdown"].front_default) ? ((!pokemon.sprites.other["official-artwork"].front_default) ? ((!pokemon.sprites.other["home"].front_default) ? "https://www.freeiconspng.com/uploads/no-image-icon-4.png" : pokemon.sprites.other["home"].front_default) : pokemon.sprites.other["official-artwork"].front_default) : pokemon.sprites.other["showdown"].front_default)}">
                     </div>
                 </div>
                 <div class="pokedemon-dialog-body">
